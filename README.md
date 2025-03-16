@@ -42,7 +42,7 @@
 Eseguire lo script PowerShell:
 
 > [!IMPORTANT]
-> `\VsDevCmd-to-Path.ps1` crea un dump della variabile %PATH%
+> `VsDevCmd-to-Path.ps1` crea un dump della variabile %PATH%
 > prima di effettuare una modifica!
 >
 > La modifica della variabile `%PATH%` globale richiede i
@@ -92,7 +92,7 @@ Eseguire lo script PowerShell:
 Eseguire lo script PowerShell:
 
 > [!IMPORTANT]
-> `\VsDevCmd-to-Path.ps1` crea un dump della variabile %PATH%
+> `VsDevCmd-to-Path.ps1` crea un dump della variabile %PATH%
 > prima di effettuare una modifica!
 >
 > La modifica della variabile `%PATH%` globale richiede i
