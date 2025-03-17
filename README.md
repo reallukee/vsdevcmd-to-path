@@ -1,6 +1,6 @@
 # VsDevCmd to Path
 
-⚡ Aggiungi (o rimuovi) VsDevCmd alla variabile Path
+⚡ Aggiungi (o rimuovi) VsDevCmd dalla variabile Path
 
 ```batch
 > VsDevCmd
