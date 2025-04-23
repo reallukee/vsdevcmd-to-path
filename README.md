@@ -115,7 +115,7 @@ Leggere i [prerequisiti](#prerequisiti)!
 ### Esempi
 
 ```powershell
-# Per l'Utente corrente (Visual Studio 2022)
+# Per l'utente corrente (Visual Studio 2022)
 .\VsDevCmd-to-Path.ps1 Status User 2022
 ```
 
@@ -189,7 +189,7 @@ Leggere i [prerequisiti](#prerequisiti)!
 ### Esempi
 
 ```powershell
-# Per l'Utente corrente (Visual Studio 2022)
+# Per l'utente corrente (Visual Studio 2022)
 .\VsDevCmd-to-Path.ps1 Add User 2022
 ```
 
@@ -263,7 +263,7 @@ Leggere i [prerequisiti](#prerequisiti)!
 ### Esempi
 
 ```powershell
-# Per l'Utente corrente (Visual Studio 2022)
+# Per l'utente corrente (Visual Studio 2022)
 .\VsDevCmd-to-Path.ps1 Remove User 2022
 ```
 
