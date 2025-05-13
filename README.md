@@ -23,14 +23,16 @@ VsDevCmd
 # Indice
 
 * [Prerequisiti](#prerequisiti)
-* [Stato](#stato)
-* [Comandi](#comandi)
+* [Utilizzo](#utilizzo)
+* [Documentazione](#documentazione)
 * [Autore](#autore)
 * [Licenza](#licenza)
 
 
 
 # Prerequisiti
+
+* Windows 7 SP1 (O versioni successive)
 
 * PowerShell
 
@@ -59,11 +61,74 @@ VsDevCmd
 
 
 
-# Comandi
+# Utilizzo
 
 * [Stato](#stato)
 * [Aggiunta](#aggiunta)
 * [Rimozione](#rimozione)
+
+
+
+## Stato
+
+> [Documentazione](#stato-1)
+
+| Comando                                      |
+| :------------------------------------------- |
+| `.\VsDevCmd-to-Path.ps1 Status User 2022`    |
+| `.\VsDevCmd-to-Path.ps1 Status User 2019`    |
+| `.\VsDevCmd-to-Path.ps1 Status User 2017`    |
+| `.\VsDevCmd-to-Path.ps1 Status Machine 2022` |
+| `.\VsDevCmd-to-Path.ps1 Status Machine 2019` |
+| `.\VsDevCmd-to-Path.ps1 Status Machine 2017` |
+
+
+
+## Aggiunta
+
+> [Documentazione](#aggiunta-1)
+
+> [!IMPORTANT]
+> Riavviare l'emulatore di terminale per rendere attive le
+> modifiche. Le sessioni non riavviate continueranno a
+> mostrare il comportamento precedente!
+
+| Comando                                   |
+| :---------------------------------------- |
+| `.\VsDevCmd-to-Path.ps1 Add User 2022`    |
+| `.\VsDevCmd-to-Path.ps1 Add User 2019`    |
+| `.\VsDevCmd-to-Path.ps1 Add User 2017`    |
+| `.\VsDevCmd-to-Path.ps1 Add Machine 2022` |
+| `.\VsDevCmd-to-Path.ps1 Add Machine 2019` |
+| `.\VsDevCmd-to-Path.ps1 Add Machine 2017` |
+
+
+
+## Rimozione
+
+> [Documentazione](#rimozione-1)
+
+> [!IMPORTANT]
+> Riavviare l'emulatore di terminale per rendere attive le
+> modifiche. Le sessioni non riavviate continueranno a
+> mostrare il comportamento precedente!
+
+| Comando                                      |
+| :------------------------------------------- |
+| `.\VsDevCmd-to-Path.ps1 Remove User 2022`    |
+| `.\VsDevCmd-to-Path.ps1 Remove User 2019`    |
+| `.\VsDevCmd-to-Path.ps1 Remove User 2017`    |
+| `.\VsDevCmd-to-Path.ps1 Remove Machine 2022` |
+| `.\VsDevCmd-to-Path.ps1 Remove Machine 2019` |
+| `.\VsDevCmd-to-Path.ps1 Remove Machine 2017` |
+
+
+
+# Documentazione
+
+* [Stato](#stato-1)
+* [Aggiunta](#aggiunta-1)
+* [Rimozione](#rimozione-1)
 
 
 
@@ -75,13 +140,14 @@ Leggere i [prerequisiti](#prerequisiti)!
 
 > [!IMPORTANT]
 > L'esecuzione degli script PowerShell potrebbe essere
-> disattivata per impostazione predefinita.
+> disabilitata per impostazione predefinita.
 > Esegui il seguente comando in una sessione di PowerShell
 > in modalità amministratore.
 >
 > ```powershell
 > Set-ExecutionPolicy Unrestricted
 > ```
+>
 > Una volta terminata la modifica, ricordati di disattivare
 > l'esecuzione degli script PowerShell.
 > Esegui il seguente comando in una sessione di PowerShell
@@ -136,7 +202,7 @@ Leggere i [prerequisiti](#prerequisiti)!
 
 > [!IMPORTANT]
 > L'esecuzione degli script PowerShell potrebbe essere
-> disattivata per impostazione predefinita.
+> disabilitata per impostazione predefinita.
 > Esegui il seguente comando in una sessione di PowerShell
 > in modalità amministratore.
 >
@@ -210,7 +276,7 @@ Leggere i [prerequisiti](#prerequisiti)!
 
 > [!IMPORTANT]
 > L'esecuzione degli script PowerShell potrebbe essere
-> disattivata per impostazione predefinita.
+> disabilitata per impostazione predefinita.
 > Esegui il seguente comando in una sessione di PowerShell
 > in modalità amministratore.
 >

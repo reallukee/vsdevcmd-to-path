@@ -51,6 +51,12 @@ function Log-Error {
 # Write-Host $Environment
 # Write-Host $Version
 
+if ($IsLinux -or $IsMacOS) {
+    Log-Error "Windows is Required!"
+
+    exit 0
+}
+
 if (-not $Operation -or -not $Environment -or -not $Version) {
     Write-Host ""
     Write-Host "****************"
