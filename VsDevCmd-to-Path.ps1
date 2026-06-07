@@ -1,328 +1,445 @@
-#
-# ****************
-# VsDevCmd to Path
-# ****************
-#
-# Aggiungi o rimuovi VsDevCmd dalla variabile %PATH%
-#
+# VsDevCmd-to-Path.ps1
+# Version: 3.0.0
 # https://github.com/reallukee/vsdevcmd-to-path
-#
-# Author  : Luca Pollicino
-#           (https://github.com/reallukee)
-# Version : 2.0.0
-# License : MIT
-#
 
-param ($Operation, $Environment, $Version)
+param (
+    [ValidateSet(
+        "Status",
+        "Add",
+        "Remove"
+    )]
+    [string] $Command,
 
-function Log-Info {
-    param ([string]$Message)
+    [ValidateSet(
+        "User",
+        "Machine"
+    )]
+    [string] $Environment,
+
+    [ValidateSet(
+        "2026",
+        "2022",
+        "2019",
+        "2017",
+        "2015"
+    )]
+    [string] $Release,
+
+    [switch] $Version,
+    [switch] $Help,
+    [switch] $About,
+
+    [switch] $NoDump,
+
+    [switch] $Silent
+)
+
+
+
+function Write-Output-Info {
+    param (
+        [string] $Message
+    )
+
+    if ($Silent) {
+        return
+    }
 
     If ($PSVersionTable.PSVersion -gt [version]"6.0.0.0") {
-        Write-Host "`e[32m[INFO] $Message`e[0m"
+        Write-Host -Message "`e[32m[INFO] ${Message}`e[0m"
     } else {
-        Write-Host "[INFO] $Message"
+        Write-Host -Message "[INFO] ${Message}"
     }
 }
 
-function Log-Warning {
-    param ([string]$Message)
+function Write-Output-Warn {
+    param (
+        [string] $Message
+    )
+
+    if ($Silent) {
+        return
+    }
 
     If ($PSVersionTable.PSVersion -gt [version]"6.0.0.0") {
-        Write-Host "`e[33m[WARNING] $Message`e[0m"
+        Write-Host -Message "`e[33m[WARN] ${Message}`e[0m"
     } else {
-        Write-Host "[WARNING] $Message"
+        Write-Host -Message "[WARN] ${Message}"
     }
 }
 
-function Log-Error {
-    param ([string]$Message)
+function Write-Output-Fail {
+    param (
+        [string] $Message
+    )
+
+    if ($Silent) {
+        return
+    }
 
     If ($PSVersionTable.PSVersion -gt [version]"6.0.0.0") {
-        Write-Host "`e[31m[ERROR] $Message`e[0m"
+        Write-Host -Message "`e[31m[FAIL] ${Message}`e[0m"
     } else {
-        Write-Host "[ERROR] $Message"
+        Write-Host -Message "[FAIL] ${Message}"
     }
 }
 
 
 
-# Write-Host $Operation
-# Write-Host $Environment
-# Write-Host $Version
+function Get-Release-Range {
+    param (
+        [string] $Release
+    )
 
-if ($IsLinux -or $IsMacOS) {
-    Log-Error "Windows is Required!"
-
-    exit 0
-}
-
-if (-not $Operation -or -not $Environment -or -not $Version) {
-    Write-Host ""
-    Write-Host "****************"
-    Write-Host "VsDevCmd to Path"
-    Write-Host "     v2.0.0     "
-    Write-Host "****************"
-    Write-Host ""
-    Write-Host "https://github.com/reallukee/vsdevcmd-to-path"
-    Write-Host ""
-    Write-Host "Usage: .\VsDevCmd-to-Path.ps1 <Operation> <Environment> <Version>"
-    Write-Host ""
-    Write-Host "-Operation   : [Status|Add|Remove]"
-    Write-Host "-Environment : [User|Machine]"
-    Write-Host "-Version     : [2017|2019|2022]"
-    Write-Host ""
-
-    exit 0
-} else {
-    $Operations = @("Status", "Add", "Remove")
-    $ValidOperation = $Operations -contains $Operation
-
-    if (-not $ValidOperation) {
-        Log-Error "Invalid operation!"
-        Log-Error "$Operation is an invalid operation!"
-        Log-Error "Type: .\VsDevCmd-to-Path.ps1"
-
-        Write-Host ""
-
-        Write-Host "Operation failed!"
-
-        exit 1
-    }
-
-    $Environments = @("User", "Machine")
-    $ValidEnvironment = $Environments -contains $Environment
-
-    if (-not $ValidEnvironment) {
-        Log-Error "Invalid environment!"
-        Log-Error "$Environment is an invalid environment!"
-        Log-Error "Type: .\VsDevCmd-to-Path.ps1"
-
-        Write-Host ""
-
-        Write-Host "Operation failed!"
-
-        exit 1
-    }
-
-    $Versions = @("2017", "2019", "2022")
-    $ValidVersion = $Versions -contains $Version
-
-    if (-not $ValidVersion) {
-        Log-Error "Invalid version!"
-        Log-Error "$Version is an invalid version!"
-        Log-Error "Type: .\VsDevCmd-to-Path.ps1"
-
-        Write-Host ""
-
-        Write-Host "Operation failed!"
-
-        exit 1
+    switch ($Release) {
+        "2026" { return "[18.0, 19.0)"; }
+        "2022" { return "[17.0, 18.0)"; }
+        "2019" { return "[16.0, 17.0)"; }
+        "2017" { return "[15.0, 16.0)"; }
+        "2015" { return "[14.0, 15.0)"; }
     }
 }
 
+function Get-Visual-Studio {
+    param (
+        [string] $Release
+    )
+
+    $releaseRange = Get-Release-Range -Release $Release
+
+    if ($Release -eq "2015") {
+        $path = . $VSWhere -legacy `
+                           -version $releaseRange `
+                           -property installationPath
+    }
+    else {
+        $path = & $VSWhere -version $ReleaseRange `
+                           -requires "Microsoft.Component.MSBuild" `
+                           -property installationPath
+    }
+
+    $devCmdExists = $false
+
+    if ($path) {
+        $devCmdPath = "${path}\Common7\Tools"
+
+        if (Test-Path -Path $devCmdPath -PathType Container) {
+            $devCmdExists = $true
+        }
+    }
+    else {
+        $devCmdPath = $null
+    }
+
+    return [PSCustomObject]@{
+        Path         = $path
+        DevCmdPath   = $devCmdPath
+        DevCmdExists = $devCmdExists
+        Product      = "Visual Studio"
+        Label        = "Visual Studio ${Release}"
+    }
+}
+
+function Get-Visual-Studio-Build-Tools {
+    param (
+        [string] $Release
+    )
+
+    $releaseRange = Get-Release-Range -Release $Release
+
+    if ($Release -eq "2015") {
+        $path = . $VSWhere -legacy `
+                           -version $releaseRange `
+                           -property installationPath
+    }
+    else {
+        $path = . $VSWhere -version $ReleaseRange `
+                           -products "Microsoft.VisualStudio.Product.BuildTools" `
+                           -property installationPath
+    }
+
+    $devCmdExists = $false
+
+    if ($path) {
+        $devCmdPath = "${path}\Common7\Tools"
+
+        if (Test-Path -Path $devCmdPath -PathType Container) {
+            $devCmdExists = $true
+        }
+    }
+    else {
+        $devCmdPath = $null
+    }
+
+    return [PSCustomObject]@{
+        Path         = $path
+        DevCmdPath   = $devCmdPath
+        DevCmdExists = $devCmdExists
+        Product      = "Visual Studio Build Tools"
+        Label        = "Visual Studio Build Tools ${Release}"
+    }
+}
 
 
-Write-Host ""
-Write-Host "****************"
-Write-Host "VsDevCmd to Path"
-Write-Host "     v2.0.0     "
-Write-Host "****************"
-Write-Host ""
-Write-Host "https://github.com/reallukee/vsdevcmd-to-path"
-Write-Host ""
-Write-Host "Operation   : $Operation"
-Write-Host "Environment : $Environment"
-Write-Host "Version     : $Version"
-Write-Host ""
+
+function Get-User-Path {
+    return [System.Environment]::GetEnvironmentVariable(
+        "PATH",
+        [System.EnvironmentVariableTarget]::User
+    )
+}
+
+function Get-Machine-Path {
+    return [System.Environment]::GetEnvironmentVariable(
+        "PATH",
+        [System.EnvironmentVariableTarget]::Machine
+    )
+}
+
+function Get-Path {
+    param (
+        [string] $Environment
+    )
+
+    switch ($Environment) {
+        "User"    { return Get-User-Path    }
+        "Machine" { return Get-Machine-Path }
+    }
+}
 
 
 
-$VSWhere = "$Env:ProgramFiles (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
+function Set-User-Path {
+    param (
+        [string] $Path
+    )
 
-if (Test-Path $VSWhere) {
-    Log-Info "VSWhere.exe found!"
-} else {
-    Log-Error "VSWhere.exe not found!"
+    [System.Environment]::SetEnvironmentVariable(
+        "PATH",
+        $Path,
+        [System.EnvironmentVariableTarget]::User
+    )
+}
 
-    Write-Host ""
+function Set-Machine-Path {
+    param (
+        [string] $Path
+    )
 
-    Write-Host "Operation failed!"
+    [System.Environment]::SetEnvironmentVariable(
+        "PATH",
+        $Path,
+        [System.EnvironmentVariableTarget]::Machine
+    )
+}
+
+function Set-Path {
+    param (
+        [string] $Environment,
+        [string] $Path
+    )
+
+    switch ($Environment) {
+        "User"    { Set-User-Path    -Path $Path }
+        "Machine" { Set-Machine-Path -Path $Path }
+    }
+}
+
+
+
+function Invoke-Status {
+    param (
+        [object] $Path,
+        [object] $Target,
+        [object] $Environment
+    )
+
+    if ($Target.Path) {
+        Write-Output-Info -Message "$($Target.Label): INSTALLED!"
+    }
+    else {
+        Write-Output-Warn -Message "$($Target.Label): NOT INSTALLED!"
+    }
+
+    if ($Target.DevCmdPath -and $Path -like "*$($Target.DevCmdPath)*") {
+        Write-Output-Info -Message "$($Target.Label): IN $($Environment.ToUpper()) PATH!"
+    }
+    else {
+        Write-Output-Warn -Message "$($Target.Label): NOT IN $($Environment.ToUpper()) PATH!"
+    }
+}
+
+function Invoke-Add {
+    param (
+        [object] $Path,
+        [object] $Target,
+        [object] $Environment
+    )
+
+    if ($Target.Path) {
+        Write-Output-Info -Message "$($Target.Label): INSTALLED!"
+    }
+    else {
+        Write-Output-Warn -Message "$($Target.Label): NOT INSTALLED!"
+    }
+
+    if (-not $Target.DevCmdPath) {
+        Write-Output-Warn -Message "$($Target.Label): SKIPPED!"
+
+        return
+    }
+
+    if ($Target.DevCmdPath -and $Path -like "*$($Target.DevCmdPath)*") {
+        Write-Output-Info -Message "$($Target.Label): ALREADY ADDED TO $($Environment.ToUpper())!"
+    }
+    else {
+        $path = "${path};$($Target.DevCmdPath)"
+
+        Set-Path -Environment $Environment -Path $path
+
+        Write-Output-Info -Message "$($Target.Label): ADDED TO $($Environment.ToUpper())!"
+    }
+}
+
+function Invoke-Remove {
+    param (
+        [object] $Path,
+        [object] $Target
+    )
+
+    if ($Target.Path) {
+        Write-Output-Info -Message "$($Target.Label): INSTALLED!"
+    }
+    else {
+        Write-Output-Warn -Message "$($Target.Label): NOT INSTALLED!"
+    }
+
+    if (-not $Target.DevCmdPath) {
+        Write-Output-Warn -Message "$($Target.Label): SKIPPED!"
+
+        return
+    }
+
+    if ($Target.DevCmdPath -and $path -like "*$($Target.DevCmdPath)*") {
+        $path = ($path.Split(";") | Where-Object {
+            $PSItem -ne $Target.DevCmdPath
+        }) -join ";"
+
+        Set-Path -Environment $Environment -Path $path
+
+        Write-Output-Info -Message "$($Target.Label): REMOVED FROM $($Environment.ToUpper())!"
+    }
+    else {
+        Write-Output-Info -Message "$($Target.Label): ALREADY REMOVED FROM $($Environment.ToUpper())!"
+    }
+}
+
+
+
+function Invoke-Version {
+    Write-Host -Message "3.0.0"
+}
+
+function Invoke-Help {
+    Write-Host -Message ".\VsDevCmd-to-Path.ps1 -Command <Command> -Environment <Environment> -Release <Release>"
+}
+
+function Invoke-About {
+    Write-Host -Message "VsDevCmd to Path"
+}
+
+
+
+try {
+    if (-not $IsWindows) {
+        Write-Output-Fail -Message "Windows is required!"
+
+        throw
+    }
+
+    if ($Version) {
+        Invoke-Version
+
+        return
+    }
+
+    if ($Help) {
+        Invoke-Help
+
+        return
+    }
+
+    if ($About) {
+        Invoke-About
+
+        return
+    }
+
+    if (-not $Command -or -not $Environment -or -not $Release) {
+        throw
+    }
+
+    $vsWhere = "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+
+    if (Test-Path -Path $vsWhere -PathType Leaf) {
+        Write-Output-Info -Message "vswhere.exe: FOUND!"
+    }
+    else {
+        Write-Output-Fail -Message "vswhere.exe: NOT FOUND!"
+
+        throw
+    }
+
+    $vs   = Get-Visual-Studio             -Release $Release
+    $vsBt = Get-Visual-Studio-Build-Tools -Release $Release
+
+    $path = Get-Path -Environment $Environment
+
+    if ($Command -ne "Status") {
+        if (-not $NoDump) {
+            $pathFile = "path_$(Get-Date -Format "yyyyMMdd_HHmmss").txt"
+
+            $path | Out-File -FilePath $pathFile -Encoding utf8
+        }
+    }
+
+    switch ($Command) {
+        "Status" {
+            Invoke-Status -Path $path `
+                            -Target $vs `
+                            -Environment $Environment
+
+            Invoke-Status -Path $path `
+                            -Target $vsBt `
+                            -Environment $Environment
+        }
+
+        "Add" {
+            Invoke-Add -Path $path `
+                       -Target $vs `
+                       -Environment $Environment
+
+            Invoke-Add -Path $path `
+                       -Target $vsBt `
+                       -Environment $Environment
+        }
+
+        "Remove" {
+            Invoke-Remove -Path $path `
+                          -Target $vs `
+                          -Environment $Environment
+
+            Invoke-Remove -Path $path `
+                          -Target $vsBt `
+                          -Environment $Environment
+        }
+    }
+}
+catch {
+    Write-Output-Fail -Message $PSItem.Exception.Message
 
     exit 1
 }
-
-
-
-switch ($Version) {
-    "2022" {
-        $Version = "[17.0,18.0)";
-        break
-    }
-
-    "2019" {
-        $Version = "[16.0,17.0)";
-        break
-    }
-
-    "2017" {
-        $Version = "[15.0,16.0)";
-        break
-    }
+finally {
+    exit 0
 }
-
-
-
-$VsPath = & $VSWhere -version $Version -requires "Microsoft.Component.MSBuild" -property installationPath
-$VsBtPath = & $VSWhere -version $Version -products "Microsoft.VisualStudio.Product.BuildTools" -property installationPath
-$VsDevCmdPath = "$VsPath\Common7\Tools"
-$VsBtDevCmdPath = "$VsBtPath\Common7\Tools"
-$VsDevCmdPathFind = $false
-$VsBtDevCmdPathFind = $false
-
-if (Test-Path "$VsDevCmdPath\VsDevCmd.bat") {
-    Log-Info "Visual Studio VsDevCmd.bat found!"
-
-    $VsDevCmdPathFind = $true;
-} else {
-    Log-Warning "Visual Studio VsDevCmd.bat not found!"
-
-    $VsDevCmdPath = $null;
-}
-
-if (Test-Path "$VsBtDevCmdPath\VsDevCmd.bat") {
-    Log-Info "Visual Studio Build Tools VsDevCmd.bat found!"
-
-    $VsBtDevCmdPathFind = $true;
-} else {
-    $VsBtDevCmdPath = $null;
-
-    Log-Warning "Visual Studio Build Tools VsDevCmd.bat not found!"
-}
-
-# Write-Host $VsPath
-# Write-Host $VsBtPath
-# Write-Host $VsDevCmdPath
-# Write-Host $VsBtDevCmdPath
-# Write-Host $VsDevCmdPathFind
-# Write-Host $VsBtDevCmdPathFind
-
-
-
-if ($Environment -eq "User") {
-    $Path = [System.Environment]::GetEnvironmentVariable("PATH", [System.EnvironmentVariableTarget]::User)
-}
-
-if ($Environment -eq "Machine") {
-    $Path = [System.Environment]::GetEnvironmentVariable("PATH", [System.EnvironmentVariableTarget]::Machine)
-}
-
-
-
-if ($Operation -ne "Status") {
-    $now = (Get-Date).ToString("yyyy-MM-dd_HH-mm-ss")
-
-    $Path | Out-File -FilePath "$($Environment.ToUpper())_DUMP_$now.txt"
-}
-
-
-
-$NewPath = $Path
-
-if ($Operation -eq "Status") {
-    if ($VsDevCmdPathFind) {
-        Log-Info "Visual Studio                          : Installed!"
-    } else {
-        Log-Info "Visual Studio                          : NOT installed!"
-    }
-
-    if ($Path -like "*$VsDevCmdPath*" -and $VsDevCmdPath -ne $null) {
-        Log-Info "Visual Studio VsDevCmd.bat             : Added to %PATH%!"
-    } else {
-        Log-Info "Visual Studio VsDevCmd.bat             : NOT added to %PATH%!"
-    }
-
-
-
-    if ($VsBtDevCmdPathFind) {
-        Log-Info "Visual Studio Build Tools              : Installed!"
-    } else {
-        Log-Info "Visual Studio Build Tools              : NOT installed!"
-    }
-
-    if ($Path -like "*$VsBtDevCmdPath*" -and $VsBtDevCmdPath -ne $null) {
-        Log-Info "Visual Studio Build Tools VsDevCmd.bat : Added to %PATH%!"
-    } else {
-        Log-Info "Visual Studio Build Tools VsDevCmd.bat : NOT added to %PATH%!"
-    }
-}
-
-
-
-if ($Operation -eq "Add") {
-    Log-Info "Adding Visual Studio VsDevCmd.bat to $Environment %PATH%..."
-
-    if ($Path -notlike "*$VsDevCmdPath*" -and $VsDevCmdPathFind) {
-        $NewPath = "$NewPath;$VsDevCmdPath"
-    } else {
-        Log-Warning "Visual Studio VsDevCmd.bat already added!"
-    }
-
-    Log-Info "Visual Studio VsDevCmd.bat successfully added!"
-
-
-
-    Log-Info "Adding Visual Studio Build Tools VsDevCmd.bat to $Environment %PATH%..."
-
-    if ($Path -notlike "*$VsBtDevCmdPath*" -and $VsBtDevCmdPathFind) {
-        $NewPath = "$NewPath;$VsBtDevCmdPath"
-    } else {
-        Log-Warning "Visual Studio Build Tools VsDevCmd.bat already added!"
-    }
-
-    Log-Info "Visual Studio Build Tools VsDevCmd.bat successfully added!"
-}
-
-
-
-if ($Operation -eq "Remove") {
-    Log-Info "Removing Visual Studio VsDevCmd.bat from $Environment %PATH%..."
-
-    if ($Path -like "*$VsDevCmdPath*" -and $VsDevCmdPathFind) {
-        $NewPath = ($NewPath.Split(";") | Where-Object { $_ -ne $VsDevCmdPath }) -join ";"
-    } else {
-        Log-Warning "Visual Studio VsDevCmd.bat already removed!"
-    }
-
-    Log-Info "Visual Studio VsDevCmd.bat successfully removed!"
-
-
-
-    Log-Info "Removing Visual Studio Build Tools VsDevCmd.bat from $Environment %PATH%..."
-
-    if ($Path -like "*$VsBtDevCmdPath*" -and $VsBtDevCmdPathFind) {
-        $NewPath = ($NewPath.Split(";") | Where-Object { $_ -ne $VsBtDevCmdPath }) -join ";"
-    } else {
-        Log-Warning "Visual Studio Build Tools VsDevCmd.bat already removed!"
-    }
-
-    Log-Info "Visual Studio Build Tools VsDevCmd.bat successfully removed!"
-}
-
-
-
-if ($Environment -eq "User") {
-    [System.Environment]::SetEnvironmentVariable("PATH", $NewPath, [System.EnvironmentVariableTarget]::User)
-}
-
-if ($Environment -eq "Machine") {
-    [System.Environment]::SetEnvironmentVariable("PATH", $NewPath, [System.EnvironmentVariableTarget]::Machine)
-}
-
-
-
-Write-Host ""
-
-Write-Host "Operation completed!"
-
-exit 0

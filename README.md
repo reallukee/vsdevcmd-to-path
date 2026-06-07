@@ -4,18 +4,14 @@
 
 > [Download!](https://github.com/reallukee/vsdevcmd-to-path/releases/latest)
 
-```
-.\VsDevCmd-to-Path.ps1 <Operation> <Environment> <Version>
-```
-
-```
--Operation   : [Status|Add|Remove]
--Environment : [User|Machine]
--Version     : [2017|2019|2022]
+```pwsh
+.\VsDevCmd-to-Path.ps1 <Command> <Environment> <Release>
 ```
 
-```
-VsDevCmd
+```pwsh
+.\VsDevCmd-to-Path.ps1 -Command <Command> `
+                       -Environment <Environment> `
+                       -Release <Release>
 ```
 
 
@@ -32,32 +28,9 @@ VsDevCmd
 
 # Prerequisiti
 
-* Windows 7 SP1 (O versioni successive)
-
+* Windows
 * PowerShell
-
-  > [!TIP]
-  > Si consiglia di utilizzare [PowerShell 7](https://aka.ms/PSWindows)!
-
-* Visual Studio 2017 (O versioni successive)
-
-    | Nome               | Supporto |
-    | :----------------- | :------: |
-    | Visual Studio 2022 | ✅        |
-    | Visual Studio 2019 | ✅        |
-    | Visual Studio 2017 | ✅        |
-    | Visual Studio 2015 | ❌        |
-    | Visual Studio 2013 | ❌        |
-    | Visual Studio 2012 | ❌        |
-    | Visual Studio 2010 | ❌        |
-
-* Visual Studio Build Tools 2017 (O versioni successive)
-
-    | Nome                           | Supporto |
-    | :----------------------------- | :------: |
-    | Visual Studio Build Tools 2022 | ✅        |
-    | Visual Studio Build Tools 2019 | ✅        |
-    | Visual Studio Build Tools 2017 | ✅        |
+* Visual Studio o Visual Studio Build Tools
 
 
 
@@ -73,14 +46,15 @@ VsDevCmd
 
 > [Documentazione](#stato-1)
 
-| Comando                                      |
-| :------------------------------------------- |
-| `.\VsDevCmd-to-Path.ps1 Status User 2022`    |
-| `.\VsDevCmd-to-Path.ps1 Status User 2019`    |
-| `.\VsDevCmd-to-Path.ps1 Status User 2017`    |
-| `.\VsDevCmd-to-Path.ps1 Status Machine 2022` |
-| `.\VsDevCmd-to-Path.ps1 Status Machine 2019` |
-| `.\VsDevCmd-to-Path.ps1 Status Machine 2017` |
+```pwsh
+.\VsDevCmd-to-Path.ps1 Status <Environment> <Release>
+```
+
+```pwsh
+.\VsDevCmd-to-Path.ps1 -Command Status `
+                       -Environment <Environment> `
+                       -Release <Release>
+```
 
 
 
@@ -89,18 +63,20 @@ VsDevCmd
 > [Documentazione](#aggiunta-1)
 
 > [!IMPORTANT]
-> Riavviare l'emulatore di terminale per rendere attive le
-> modifiche. Le sessioni non riavviate continueranno a
-> mostrare il comportamento precedente!
+> Riavviare l'emulatore di terminale per rendere effettive le
+> modifiche.<br />
+> Le sessioni non riavviate continueranno a mostrare il
+> comportamento precedente!
 
-| Comando                                   |
-| :---------------------------------------- |
-| `.\VsDevCmd-to-Path.ps1 Add User 2022`    |
-| `.\VsDevCmd-to-Path.ps1 Add User 2019`    |
-| `.\VsDevCmd-to-Path.ps1 Add User 2017`    |
-| `.\VsDevCmd-to-Path.ps1 Add Machine 2022` |
-| `.\VsDevCmd-to-Path.ps1 Add Machine 2019` |
-| `.\VsDevCmd-to-Path.ps1 Add Machine 2017` |
+```pwsh
+.\VsDevCmd-to-Path.ps1 Add <Environment> <Release>
+```
+
+```pwsh
+.\VsDevCmd-to-Path.ps1 -Command Add `
+                       -Environment <Environment> `
+                       -Release <Release>
+```
 
 
 
@@ -109,18 +85,20 @@ VsDevCmd
 > [Documentazione](#rimozione-1)
 
 > [!IMPORTANT]
-> Riavviare l'emulatore di terminale per rendere attive le
-> modifiche. Le sessioni non riavviate continueranno a
-> mostrare il comportamento precedente!
+> Riavviare l'emulatore di terminale per rendere effettive le
+> modifiche.<br />
+> Le sessioni non riavviate continueranno a mostrare il
+> comportamento precedente!
 
-| Comando                                      |
-| :------------------------------------------- |
-| `.\VsDevCmd-to-Path.ps1 Remove User 2022`    |
-| `.\VsDevCmd-to-Path.ps1 Remove User 2019`    |
-| `.\VsDevCmd-to-Path.ps1 Remove User 2017`    |
-| `.\VsDevCmd-to-Path.ps1 Remove Machine 2022` |
-| `.\VsDevCmd-to-Path.ps1 Remove Machine 2019` |
-| `.\VsDevCmd-to-Path.ps1 Remove Machine 2017` |
+```pwsh
+.\VsDevCmd-to-Path.ps1 Remove <Environment> <Release>
+```
+
+```pwsh
+.\VsDevCmd-to-Path.ps1 -Command Remove `
+                       -Environment <Environment> `
+                       -Release <Release>
+```
 
 
 
@@ -140,29 +118,33 @@ Leggere i [prerequisiti](#prerequisiti)!
 
 > [!IMPORTANT]
 > L'esecuzione degli script PowerShell potrebbe essere
-> disabilitata per impostazione predefinita.
+> disabilitata per impostazione predefinita.<br />
 > Esegui il seguente comando in una sessione di PowerShell
-> in modalità amministratore.
+> in modalità amministratore.<br />
 >
-> ```powershell
+> ```pwsh
 > Set-ExecutionPolicy Unrestricted
 > ```
 >
 > Una volta terminata la modifica, ricordati di disattivare
-> l'esecuzione degli script PowerShell.
+> l'esecuzione degli script PowerShell.<br />
 > Esegui il seguente comando in una sessione di PowerShell
-> in modalità amministratore.
+> in modalità amministratore.<br />
 >
-> ```powershell
+> ```pwsh
 > Set-ExecutionPolicy Restricted
 > ```
 
-
-
 ### Sintassi
 
+```pwsh
+.\VsDevCmd-to-Path.ps1 Status <Environment> <Release>
 ```
-.\VsDevCmd-to-Path.ps1 Status <Environment> <Version>
+
+```pwsh
+.\VsDevCmd-to-Path.ps1 -Command Status `
+                       -Environment <Environment> `
+                       -Release <Release>
 ```
 
 **Environment**
@@ -170,24 +152,24 @@ Leggere i [prerequisiti](#prerequisiti)!
 * `User`: Operazione per l'utente corrente
 * `Machine`: Operazione per tutti gli utenti
 
-**Version**
+**Release**
 
+* `2026`: Visual Studio 2026 e Visual Studio Build Tools 2026
 * `2022`: Visual Studio 2022 e Visual Studio Build Tools 2022
 * `2019`: Visual Studio 2019 e Visual Studio Build Tools 2019
 * `2017`: Visual Studio 2017 e Visual Studio Build Tools 2017
-
-
+* `2015`: Visual Studio 2015 e Visual Studio Build Tools 2015
 
 ### Esempi
 
-```powershell
+```pwsh
 # Per l'utente corrente (Visual Studio 2022)
-.\VsDevCmd-to-Path.ps1 Status User 2022
+.\VsDevCmd-to-Path.ps1 -Command Status -Environment User -Release 2022
 ```
 
-```powershell
+```pwsh
 # Per tutti gli utenti (Visual Studio 2019)
-.\VsDevCmd-to-Path.ps1 Status Machine 2019
+.\VsDevCmd-to-Path.ps1 -Command Status -Environment Machine -Release 2019
 ```
 
 
@@ -202,20 +184,20 @@ Leggere i [prerequisiti](#prerequisiti)!
 
 > [!IMPORTANT]
 > L'esecuzione degli script PowerShell potrebbe essere
-> disabilitata per impostazione predefinita.
+> disabilitata per impostazione predefinita.<br />
 > Esegui il seguente comando in una sessione di PowerShell
-> in modalità amministratore.
+> in modalità amministratore.<br />
 >
-> ```powershell
+> ```pwsh
 > Set-ExecutionPolicy Unrestricted
 > ```
 >
 > Una volta terminata la modifica, ricordati di disattivare
-> l'esecuzione degli script PowerShell.
+> l'esecuzione degli script PowerShell.<br />
 > Esegui il seguente comando in una sessione di PowerShell
-> in modalità amministratore.
+> in modalità amministratore.<br />
 >
-> ```powershell
+> ```pwsh
 > Set-ExecutionPolicy Restricted
 > ```
 
@@ -231,12 +213,16 @@ Leggere i [prerequisiti](#prerequisiti)!
 > La modifica della variabile `%PATH%` globale richiede i
 > permessi di amministratore nella sessione di PowerShell.
 
-
-
 ### Sintassi
 
+```pwsh
+.\VsDevCmd-to-Path.ps1 Add <Environment> <Release>
 ```
-.\VsDevCmd-to-Path.ps1 Add <Environment> <Version>
+
+```pwsh
+.\VsDevCmd-to-Path.ps1 -Command Add `
+                       -Environment <Environment> `
+                       -Release <Release>
 ```
 
 **Environment**
@@ -244,24 +230,24 @@ Leggere i [prerequisiti](#prerequisiti)!
 * `User`: Operazione per l'utente corrente
 * `Machine`: Operazione per tutti gli utenti
 
-**Version**
+**Release**
 
+* `2026`: Visual Studio 2026 e Visual Studio Build Tools 2026
 * `2022`: Visual Studio 2022 e Visual Studio Build Tools 2022
 * `2019`: Visual Studio 2019 e Visual Studio Build Tools 2019
 * `2017`: Visual Studio 2017 e Visual Studio Build Tools 2017
-
-
+* `2015`: Visual Studio 2015 e Visual Studio Build Tools 2015
 
 ### Esempi
 
-```powershell
+```pwsh
 # Per l'utente corrente (Visual Studio 2022)
-.\VsDevCmd-to-Path.ps1 Add User 2022
+.\VsDevCmd-to-Path.ps1 -Command Add -Environment User -Release 2022
 ```
 
-```powershell
+```pwsh
 # Per tutti gli utenti (Visual Studio 2019)
-.\VsDevCmd-to-Path.ps1 Add Machine 2019
+.\VsDevCmd-to-Path.ps1 -Command Add -Environment Machine -Release 2019
 ```
 
 
@@ -276,20 +262,20 @@ Leggere i [prerequisiti](#prerequisiti)!
 
 > [!IMPORTANT]
 > L'esecuzione degli script PowerShell potrebbe essere
-> disabilitata per impostazione predefinita.
+> disabilitata per impostazione predefinita.<br />
 > Esegui il seguente comando in una sessione di PowerShell
-> in modalità amministratore.
+> in modalità amministratore.<br />
 >
-> ```powershell
+> ```pwsh
 > Set-ExecutionPolicy Unrestricted
 > ```
 >
 > Una volta terminata la modifica, ricordati di disattivare
-> l'esecuzione degli script PowerShell.
+> l'esecuzione degli script PowerShell.<br />
 > Esegui il seguente comando in una sessione di PowerShell
-> in modalità amministratore.
+> in modalità amministratore.<br />
 >
-> ```powershell
+> ```pwsh
 > Set-ExecutionPolicy Restricted
 > ```
 
@@ -305,12 +291,16 @@ Leggere i [prerequisiti](#prerequisiti)!
 > La modifica della variabile `%PATH%` globale richiede i
 > permessi di amministratore nella sessione di PowerShell.
 
-
-
 ### Sintassi
 
+```pwsh
+.\VsDevCmd-to-Path.ps1 Remove <Environment> <Release>
 ```
-.\VsDevCmd-to-Path.ps1 Remove <Environment> <Version>
+
+```pwsh
+.\VsDevCmd-to-Path.ps1 -Command Remove `
+                       -Environment <Environment> `
+                       -Release <Release>
 ```
 
 **Environment**
@@ -318,24 +308,24 @@ Leggere i [prerequisiti](#prerequisiti)!
 * `User`: Operazione per l'utente corrente
 * `Machine`: Operazione per tutti gli utenti
 
-**Version**
+**Release**
 
+* `2026`: Visual Studio 2026 e Visual Studio Build Tools 2026
 * `2022`: Visual Studio 2022 e Visual Studio Build Tools 2022
 * `2019`: Visual Studio 2019 e Visual Studio Build Tools 2019
 * `2017`: Visual Studio 2017 e Visual Studio Build Tools 2017
-
-
+* `2015`: Visual Studio 2015 e Visual Studio Build Tools 2015
 
 ### Esempi
 
-```powershell
+```pwsh
 # Per l'utente corrente (Visual Studio 2022)
-.\VsDevCmd-to-Path.ps1 Remove User 2022
+.\VsDevCmd-to-Path.ps1 -Command Remove -Environment User -Release 2022
 ```
 
-```powershell
+```pwsh
 # Per tutti gli utenti (Visual Studio 2019)
-.\VsDevCmd-to-Path.ps1 Remove Machine 2019
+.\VsDevCmd-to-Path.ps1 -Command Remove -Environment Machine -Release 2019
 ```
 
 
