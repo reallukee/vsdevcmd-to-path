@@ -1,8 +1,10 @@
 # VsDevCmd to Path
 
+![License](https://img.shields.io/github/license/reallukee/vsdevcmd-to-path)
+
 ⚡ Aggiungi o rimuovi VsDevCmd dalla variabile %PATH%
 
-> [Download!](https://github.com/reallukee/vsdevcmd-to-path/releases/latest)
+> [Download!](https://raw.githubusercontent.com/reallukee/vsdevcmd-to-path/refs/heads/main/VsDevCmd-to-Path.ps1)
 
 ```pwsh
 .\VsDevCmd-to-Path.ps1 <Command> <Environment> <Release>
